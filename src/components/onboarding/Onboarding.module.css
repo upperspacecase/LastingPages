@@ -14,17 +14,17 @@
   height: 200%;
   background: radial-gradient(
     ellipse at 50% 40%,
-    var(--color-terracotta-faint) 0%,
+    var(--color-gold-faint) 0%,
     transparent 50%
   );
-  opacity: 0.3;
+  opacity: 0.4;
   pointer-events: none;
   animation: ambientPulse 8s ease-in-out infinite;
 }
 
 @keyframes ambientPulse {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(1.05); }
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.05); }
 }
 
 /* Step */
@@ -46,12 +46,13 @@
 
 .logo {
   font-family: var(--font-serif);
-  font-size: var(--text-4xl);
+  font-size: var(--text-5xl);
   font-weight: 600;
   color: var(--color-ink);
   letter-spacing: var(--tracking-tight);
-  line-height: 1.15;
+  line-height: 1.1;
   margin-bottom: var(--space-4);
+  text-transform: uppercase;
 }
 
 .tagline {
@@ -59,7 +60,7 @@
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-wider);
 }
 
 /* Conversation */
@@ -72,7 +73,7 @@
 .greeting {
   font-family: var(--font-serif);
   font-size: var(--text-2xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   margin-bottom: var(--space-6);
   margin-top: var(--space-12);
@@ -107,6 +108,7 @@
   color: var(--color-text-tertiary);
   margin-bottom: var(--space-2);
   letter-spacing: var(--tracking-wide);
+  font-weight: 500;
 }
 
 .input {
@@ -115,7 +117,7 @@
   font-family: var(--font-serif);
   font-size: var(--text-xl);
   color: var(--color-ink);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 2.5px solid var(--color-ink);
   transition: border-color var(--duration-standard) var(--ease-out);
 }
 
@@ -140,28 +142,30 @@
   padding: var(--space-2) var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--color-text-secondary);
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
+  background: var(--color-cream-light);
+  border: var(--border-thin);
   border-radius: var(--radius-xl);
   transition: all var(--duration-quick) var(--ease-out);
 }
 
 .interestChip:hover {
-  border-color: var(--color-terracotta-muted);
+  background: var(--color-cream-dark);
 }
 
 .interestSelected {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
-  background: var(--color-terracotta-faint);
+  color: var(--color-cream-light);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
 }
 
 /* Preview Card */
 .previewCard {
   padding: var(--space-6);
-  background: var(--color-bg-elevated);
+  background: var(--color-cream-light);
   border-radius: var(--radius-lg);
+  border: var(--border-bold);
   box-shadow: var(--shadow-md);
   margin-bottom: var(--space-6);
 }
@@ -179,7 +183,7 @@
 .previewConcept {
   font-family: var(--font-serif);
   font-size: var(--text-xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   line-height: var(--leading-snug);
   margin-bottom: var(--space-3);
@@ -206,11 +210,13 @@
   padding: var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-cream-light);
-  background: var(--color-accent);
+  background: var(--color-ink);
+  border: var(--border-bold);
   border-radius: var(--radius-md);
   transition: opacity var(--duration-quick) var(--ease-out);
+  letter-spacing: var(--tracking-wide);
 }
 
 .continueButton:hover {
@@ -218,7 +224,7 @@
 }
 
 .continueButton:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 

@@ -10,7 +10,8 @@
 .backButton {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  color: var(--color-text-secondary);
+  font-weight: 600;
+  color: var(--color-ink);
   padding: var(--space-2) 0;
 }
 
@@ -37,16 +38,24 @@
 }
 
 .cover {
-  width: 160px;
-  height: 240px;
+  width: 170px;
+  height: 250px;
   border-radius: var(--radius-sm);
+  border: var(--border-bold);
   box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: var(--space-5);
   position: relative;
   overflow: hidden;
+}
+
+.coverImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .coverSpine {
@@ -55,7 +64,8 @@
   top: 0;
   bottom: 0;
   width: 5px;
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--color-ink);
+  z-index: 2;
 }
 
 .coverOverlay {
@@ -63,11 +73,13 @@
   inset: 0;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 40%, rgba(0, 0, 0, 0.15) 100%);
   pointer-events: none;
+  z-index: 1;
 }
 
 .coverText {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  padding: var(--space-4);
 }
 
 .coverTitle {
@@ -76,16 +88,16 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
   line-height: var(--leading-snug);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   margin-bottom: var(--space-1);
 }
 
 .coverAuthor {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 300;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Retention Visualization */
@@ -96,16 +108,17 @@
 
 .retentionBar {
   width: 100%;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
+  height: 5px;
+  background: var(--color-cream-dark);
+  border-radius: 3px;
   overflow: hidden;
   margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
 }
 
 .retentionFill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .retentionLabel {
@@ -127,9 +140,9 @@
   line-height: var(--leading-relaxed);
   font-style: italic;
   padding: var(--space-4);
-  background: var(--color-bg-warm);
+  background: var(--color-cream-light);
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--color-terracotta-faint);
+  border-left: 4px solid var(--color-ink);
 }
 
 .sectionHeader {
@@ -142,7 +155,7 @@
 .sectionTitle {
   font-family: var(--font-serif);
   font-size: var(--text-xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
 }
 
@@ -150,6 +163,7 @@
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--color-text-tertiary);
+  font-weight: 600;
 }
 
 /* Concepts */
@@ -163,8 +177,9 @@
   display: flex;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--color-bg-elevated);
+  background: var(--color-cream-light);
   border-radius: var(--radius-md);
+  border: var(--border-thin);
   box-shadow: var(--shadow-sm);
 }
 
@@ -177,6 +192,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  border: 1.5px solid var(--color-ink);
   transition: all var(--duration-slow) var(--ease-out);
 }
 
@@ -188,7 +204,7 @@
 .conceptTitle {
   font-family: var(--font-serif);
   font-size: var(--text-base);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   line-height: var(--leading-snug);
   margin-bottom: var(--space-2);
@@ -225,24 +241,25 @@
   margin-top: var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
+  font-weight: 600;
   color: var(--color-text-secondary);
-  border: 1px dashed var(--color-border);
+  border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
   text-align: center;
   transition: all var(--duration-quick) var(--ease-out);
 }
 
 .addConceptButton:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--color-ink);
+  color: var(--color-ink);
 }
 
 .addConceptForm {
   margin-top: var(--space-4);
   padding: var(--space-4);
-  background: var(--color-bg-elevated);
+  background: var(--color-cream-light);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border: var(--border-thin);
   overflow: hidden;
 }
 
@@ -251,8 +268,8 @@
   padding: var(--space-3);
   font-family: var(--font-serif);
   font-size: var(--text-base);
-  font-weight: 500;
-  border-bottom: 1px solid var(--color-border);
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--color-border);
   margin-bottom: var(--space-3);
 }
 
@@ -267,7 +284,7 @@
   font-family: var(--font-serif);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1.5px solid var(--color-border);
   margin-bottom: var(--space-3);
 }
 
@@ -292,14 +309,15 @@
 .saveButton {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-cream-light);
-  background: var(--color-accent);
+  background: var(--color-ink);
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
+  border: var(--border-bold);
 }
 
 .saveButton:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
 }

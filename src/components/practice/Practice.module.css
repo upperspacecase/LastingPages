@@ -14,9 +14,10 @@
 
 .closeButton {
   font-size: var(--text-xl);
-  color: var(--color-text-secondary);
+  color: var(--color-ink);
   padding: var(--space-2);
   width: 40px;
+  font-weight: 700;
 }
 
 .headerSpacer {
@@ -29,20 +30,21 @@
 }
 
 .progressDot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--color-border);
+  background: var(--color-cream-dark);
+  border: 1.5px solid var(--color-ink);
   transition: all var(--duration-standard) var(--ease-out);
 }
 
 .progressActive {
   background: var(--color-accent);
-  transform: scale(1.3);
+  transform: scale(1.2);
 }
 
 .progressDone {
-  background: var(--color-sage);
+  background: var(--color-ink);
 }
 
 /* Card Container */
@@ -56,9 +58,10 @@
 
 .card {
   width: 100%;
-  background: var(--color-bg-elevated);
+  background: var(--color-cream-light);
   border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-6);
+  border: var(--border-bold);
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
@@ -87,13 +90,14 @@
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  border: 1.5px solid var(--color-ink);
 }
 
 .cardSourceTitle {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .cardSourceAuthor {
@@ -106,7 +110,7 @@
 .cardConcept {
   font-family: var(--font-serif);
   font-size: var(--text-2xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   line-height: var(--leading-snug);
   margin-bottom: var(--space-4);
@@ -142,10 +146,10 @@
   padding: var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-accent);
+  font-weight: 600;
+  color: var(--color-ink);
   background: transparent;
-  border: 1px solid var(--color-terracotta-faint);
+  border: var(--border-bold);
   border-radius: var(--radius-md);
   transition: all var(--duration-quick) var(--ease-out);
   position: relative;
@@ -153,7 +157,7 @@
 }
 
 .engageButton:hover {
-  background: var(--color-terracotta-faint);
+  background: var(--color-cream-dark);
 }
 
 /* Reflection */
@@ -185,13 +189,13 @@
   color: var(--color-ink);
   line-height: var(--leading-relaxed);
   background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   transition: border-color var(--duration-quick) var(--ease-out);
 }
 
 .reflectionInput:focus {
-  border-color: var(--color-terracotta-muted);
+  border-color: var(--color-accent);
 }
 
 .reflectionInput::placeholder {
@@ -203,7 +207,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 2px;
+  height: 2.5px;
   background: var(--color-accent);
   border-radius: 1px;
 }
@@ -216,11 +220,12 @@
 .submitButton {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-cream-light);
-  background: var(--color-accent);
+  background: var(--color-ink);
   padding: var(--space-2) var(--space-5);
   border-radius: var(--radius-md);
+  border: var(--border-bold);
   transition: opacity var(--duration-quick) var(--ease-out);
 }
 
@@ -242,15 +247,15 @@
   font-size: var(--text-sm);
   color: var(--color-ink-light);
   background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   line-height: var(--leading-normal);
   transition: all var(--duration-quick) var(--ease-out);
 }
 
 .interpretationButton:hover {
-  border-color: var(--color-accent);
-  background: var(--color-terracotta-faint);
+  background: var(--color-cream-dark);
+  border-color: var(--color-ink);
 }
 
 /* Renewed Badge */
@@ -260,7 +265,7 @@
   right: var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-gold);
   letter-spacing: var(--tracking-wider);
   text-transform: lowercase;
@@ -294,6 +299,7 @@
 .emptyTitle {
   font-family: var(--font-serif);
   font-size: var(--text-2xl);
+  font-weight: 600;
   color: var(--color-ink);
   margin-bottom: var(--space-4);
 }
@@ -310,10 +316,10 @@
 .backButton {
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-accent);
+  font-weight: 600;
+  color: var(--color-ink);
   padding: var(--space-3) var(--space-6);
-  border: 1px solid var(--color-terracotta-faint);
+  border: var(--border-bold);
   border-radius: var(--radius-md);
 }
 
@@ -328,7 +334,7 @@
 .summaryTitle {
   font-family: var(--font-serif);
   font-size: var(--text-3xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   margin-bottom: var(--space-8);
 }
@@ -347,7 +353,7 @@
 
 .summaryText strong {
   color: var(--color-ink);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .summaryHighlight {
@@ -355,6 +361,7 @@
   font-size: var(--text-sm);
   color: var(--color-sage);
   font-style: italic;
+  font-weight: 500;
 }
 
 /* Summary Books */
@@ -370,7 +377,7 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1.5px solid var(--color-border);
 }
 
 .summaryBookDot {
@@ -379,6 +386,7 @@
   border-radius: 50%;
   margin-top: 6px;
   flex-shrink: 0;
+  border: 1px solid var(--color-ink);
 }
 
 .summaryBookInfo {
@@ -391,7 +399,7 @@
 .summaryBookTitle {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
 }
 
@@ -407,6 +415,7 @@
   font-size: var(--text-xs);
   color: var(--color-gold);
   font-style: italic;
+  font-weight: 500;
   margin-top: 4px;
 }
 
@@ -429,16 +438,16 @@
   padding: var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-accent);
-  border: 1px solid var(--color-terracotta-faint);
+  font-weight: 600;
+  color: var(--color-ink);
+  border: var(--border-bold);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-3);
   transition: background var(--duration-quick) var(--ease-out);
 }
 
 .summaryAddButton:hover {
-  background: var(--color-terracotta-faint);
+  background: var(--color-cream-dark);
 }
 
 .summaryDoneButton {

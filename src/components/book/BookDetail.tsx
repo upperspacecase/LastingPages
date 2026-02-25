@@ -67,15 +67,24 @@ export function BookDetail() {
           <div
             className={styles.cover}
             style={{
-              background: `linear-gradient(135deg, ${book.coverColor} 0%, ${book.coverAccent} 100%)`,
+              background: book.coverImage ? 'var(--color-ink)' : `linear-gradient(135deg, ${book.coverColor} 0%, ${book.coverAccent} 100%)`,
             }}
           >
+            {book.coverImage && (
+              <img
+                src={book.coverImage}
+                alt=""
+                className={styles.coverImage}
+              />
+            )}
             <div className={styles.coverSpine} />
             <div className={styles.coverOverlay} />
-            <div className={styles.coverText}>
-              <h1 className={styles.coverTitle}>{book.title}</h1>
-              <p className={styles.coverAuthor}>{book.author}</p>
-            </div>
+            {!book.coverImage && (
+              <div className={styles.coverText}>
+                <h1 className={styles.coverTitle}>{book.title}</h1>
+                <p className={styles.coverAuthor}>{book.author}</p>
+              </div>
+            )}
           </div>
         </motion.div>
 

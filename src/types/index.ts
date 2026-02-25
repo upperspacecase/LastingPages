@@ -4,6 +4,7 @@ export interface Book {
   author: string;
   coverColor: string;
   coverAccent: string;
+  coverImage?: string;
   dateAdded: string;
   lastRevisited: string | null;
   concepts: Concept[];

@@ -10,7 +10,7 @@
 .title {
   font-family: var(--font-serif);
   font-size: var(--text-3xl);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   letter-spacing: var(--tracking-tight);
 }
@@ -30,10 +30,10 @@
   justify-content: space-between;
   margin: var(--space-2) var(--space-6) var(--space-6);
   padding: var(--space-5) var(--space-6);
-  background: linear-gradient(135deg, var(--color-bg-warm) 0%, var(--color-cream-dark) 100%);
+  background: var(--color-cream-light);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
+  border: var(--border-bold);
+  box-shadow: var(--shadow-md);
   text-align: left;
   cursor: pointer;
 }
@@ -45,7 +45,7 @@
 .practiceLabel {
   font-family: var(--font-serif);
   font-size: var(--text-lg);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   margin-bottom: var(--space-1);
 }
@@ -61,6 +61,7 @@
   font-size: var(--text-2xl);
   color: var(--color-accent);
   margin-left: var(--space-4);
+  font-weight: 700;
 }
 
 /* Sections */
@@ -71,7 +72,7 @@
 .sectionTitle {
   font-family: var(--font-serif);
   font-size: var(--text-lg);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-ink);
   padding: 0 var(--space-6);
   margin-bottom: var(--space-1);
@@ -114,11 +115,12 @@
 .addButton {
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-cream-light);
-  background: var(--color-accent);
+  background: var(--color-ink);
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-md);
+  border: var(--border-bold);
   transition: transform var(--duration-quick) var(--ease-out),
     opacity var(--duration-quick) var(--ease-out);
 }
@@ -140,8 +142,7 @@
   padding: var(--space-3) var(--space-4);
   padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
   background: var(--color-cream-light);
-  border-top: 1px solid var(--color-border);
-  backdrop-filter: blur(12px);
+  border-top: var(--border-bold);
   z-index: 100;
 }
 
@@ -157,7 +158,7 @@
 
 .navButton:hover,
 .navActive {
-  color: var(--color-accent);
+  color: var(--color-ink);
 }
 
 .navIcon {
@@ -167,6 +168,6 @@
 
 .navLabel {
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: var(--tracking-wide);
 }
