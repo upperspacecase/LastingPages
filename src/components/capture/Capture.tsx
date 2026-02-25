@@ -31,6 +31,7 @@ export function Capture() {
   const [conceptText, setConceptText] = useState('');
   const [conceptContext, setConceptContext] = useState('');
   const [personalNote, setPersonalNote] = useState('');
+  const [showMoreFields, setShowMoreFields] = useState(false);
 
   const debouncedQuery = useDebounce(searchQuery, 350);
 
@@ -135,6 +136,7 @@ export function Capture() {
     setConceptText('');
     setConceptContext('');
     setPersonalNote('');
+    setShowMoreFields(false);
     setStep('concept');
   };
 
@@ -389,25 +391,43 @@ export function Capture() {
               placeholder="The concept, insight, or framework..."
               value={conceptText}
               onChange={(e) => setConceptText(e.target.value)}
-              rows={2}
+              rows={3}
               autoFocus
             />
 
-            <textarea
-              className={styles.textarea}
-              placeholder="Some context — what does this idea mean? (optional)"
-              value={conceptContext}
-              onChange={(e) => setConceptContext(e.target.value)}
-              rows={3}
-            />
+            {!showMoreFields && (
+              <button
+                className={styles.addMoreButton}
+                onClick={() => setShowMoreFields(true)}
+              >
+                + Add context or a personal note
+              </button>
+            )}
 
-            <textarea
-              className={styles.textarea}
-              placeholder="Why does it matter to you? (optional)"
-              value={personalNote}
-              onChange={(e) => setPersonalNote(e.target.value)}
-              rows={2}
-            />
+            {showMoreFields && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.3 }}
+              >
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Some context — what does this idea mean?"
+                  value={conceptContext}
+                  onChange={(e) => setConceptContext(e.target.value)}
+                  rows={3}
+                  autoFocus
+                />
+
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Why does it matter to you?"
+                  value={personalNote}
+                  onChange={(e) => setPersonalNote(e.target.value)}
+                  rows={2}
+                />
+              </motion.div>
+            )}
 
             <button
               className={styles.continueButton}

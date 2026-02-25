@@ -346,6 +346,21 @@
   font-style: italic;
 }
 
+/* Add more detail toggle */
+.addMoreButton {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  padding: var(--space-2) 0;
+  margin-bottom: var(--space-4);
+  text-align: left;
+  transition: color var(--duration-quick) var(--ease-out);
+}
+
+.addMoreButton:hover {
+  color: var(--color-ink);
+}
+
 /* Inputs */
 .textarea {
   width: 100%;
