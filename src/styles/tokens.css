@@ -1,0 +1,116 @@
+/* ==========================================================================
+   LASTING PAGES — Design Tokens
+   Aged paper, warm lamplight, natural materials
+   ========================================================================== */
+
+:root {
+  /* Color: Warm Cream & Paper */
+  --color-cream: #F5F0E8;
+  --color-cream-dark: #EDE6D8;
+  --color-cream-light: #FAF8F3;
+  --color-parchment: #E8E0D0;
+
+  /* Color: Warm Charcoal (not-quite-black) */
+  --color-ink: #2C2825;
+  --color-ink-light: #4A4540;
+  --color-ink-muted: #7A756E;
+  --color-ink-faint: #B0AAA2;
+
+  /* Color: Terracotta Accent */
+  --color-terracotta: #C47B5A;
+  --color-terracotta-light: #D4976E;
+  --color-terracotta-muted: #D4A48A;
+  --color-terracotta-faint: #E8CCBA;
+
+  /* Color: Secondary Accents */
+  --color-sage: #8B9E7E;
+  --color-sage-light: #A8B89D;
+  --color-sage-faint: #D0DBC9;
+  --color-gold: #C4A95A;
+  --color-gold-light: #D4BE7A;
+  --color-gold-faint: #E8DDB8;
+
+  /* Color: Semantic */
+  --color-bg: var(--color-cream);
+  --color-bg-elevated: var(--color-cream-light);
+  --color-bg-warm: #F0E8DA;
+  --color-text: var(--color-ink);
+  --color-text-secondary: var(--color-ink-muted);
+  --color-text-tertiary: var(--color-ink-faint);
+  --color-accent: var(--color-terracotta);
+  --color-border: #DDD6C8;
+  --color-shadow: rgba(44, 40, 37, 0.06);
+
+  /* Typography: Families */
+  --font-serif: 'Literata', 'Georgia', serif;
+  --font-sans: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+
+  /* Typography: Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Typography: Line Heights */
+  --leading-tight: 1.25;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Typography: Letter Spacing */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* Shadows (soft, diffused — like a book on a table) */
+  --shadow-sm: 0 1px 3px rgba(44, 40, 37, 0.04), 0 1px 2px rgba(44, 40, 37, 0.06);
+  --shadow-md: 0 4px 12px rgba(44, 40, 37, 0.06), 0 2px 4px rgba(44, 40, 37, 0.04);
+  --shadow-lg: 0 8px 24px rgba(44, 40, 37, 0.08), 0 4px 8px rgba(44, 40, 37, 0.04);
+  --shadow-xl: 0 16px 48px rgba(44, 40, 37, 0.10), 0 8px 16px rgba(44, 40, 37, 0.06);
+
+  /* Motion Tokens */
+  --duration-quick: 150ms;
+  --duration-standard: 350ms;
+  --duration-contemplative: 600ms;
+  --duration-slow: 800ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-settle: cubic-bezier(0.22, 0.68, 0, 1.04);
+
+  /* Layout */
+  --max-width: 480px;
+  --header-height: 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-quick: 0ms;
+    --duration-standard: 0ms;
+    --duration-contemplative: 100ms;
+    --duration-slow: 100ms;
+  }
+}
