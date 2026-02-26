@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useStore } from '../../store/useStore';
-import { getRetentionHealth, getBookRetention, formatRetentionPeriod } from '../../utils/retention';
+import { useStore } from '@/store/useStore';
+import { getRetentionHealth, getBookRetention, formatRetentionPeriod } from '@/utils/retention';
 import styles from './BookDetail.module.css';
 
 export function BookDetail() {
@@ -100,8 +100,8 @@ export function BookDetail() {
                 background: retention > 0.6
                   ? `linear-gradient(90deg, var(--color-sage), var(--color-sage-light))`
                   : retention > 0.3
-                  ? `linear-gradient(90deg, var(--color-gold), var(--color-gold-light))`
-                  : `linear-gradient(90deg, var(--color-terracotta-muted), var(--color-terracotta-light))`,
+                    ? `linear-gradient(90deg, var(--color-gold), var(--color-gold-light))`
+                    : `linear-gradient(90deg, var(--color-terracotta-muted), var(--color-terracotta-light))`,
               }}
             />
           </div>
@@ -109,8 +109,8 @@ export function BookDetail() {
             {retention > 0.7
               ? 'These ideas are alive and well'
               : retention > 0.4
-              ? 'Some ideas are gently fading'
-              : 'These ideas are ready to be remembered again'}
+                ? 'Some ideas are gently fading'
+                : 'These ideas are ready to be remembered again'}
           </p>
         </div>
       </div>
@@ -147,8 +147,8 @@ export function BookDetail() {
                       backgroundColor: health > 0.6
                         ? 'var(--color-sage)'
                         : health > 0.3
-                        ? 'var(--color-gold)'
-                        : 'var(--color-terracotta-muted)',
+                          ? 'var(--color-gold)'
+                          : 'var(--color-terracotta-muted)',
                       opacity: 0.4 + health * 0.6,
                     }}
                   />

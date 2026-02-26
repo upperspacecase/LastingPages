@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '../../store/useStore';
-import { searchBooks, type BookSearchResult } from '../../utils/openLibrary';
-import { useDebounce } from '../../hooks/useDebounce';
-import type { Book, Concept } from '../../types';
+import { useStore } from '@/store/useStore';
+import { searchBooks, type BookSearchResult } from '@/utils/openLibrary';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { Book, Concept } from '@/types';
 import styles from './Capture.module.css';
 
 type CaptureStep = 'book' | 'concept' | 'note' | 'done';

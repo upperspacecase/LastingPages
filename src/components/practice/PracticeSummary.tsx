@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import type { PracticeCard } from '../../types';
+import type { PracticeCard } from '@/types';
 import styles from './Practice.module.css';
 
 interface PracticeSummaryProps {

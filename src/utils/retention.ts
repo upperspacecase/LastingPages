@@ -1,5 +1,5 @@
 import { differenceInDays, differenceInHours } from 'date-fns';
-import type { Concept, Book } from '../types';
+import type { Concept, Book } from '@/types';
 
 /**
  * Calculate retention health (0–1) based on forgetting curve.

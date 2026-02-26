@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '../../store/useStore';
+import { useStore } from '@/store/useStore';
 import styles from './Onboarding.module.css';
 
 const INTERESTS = [

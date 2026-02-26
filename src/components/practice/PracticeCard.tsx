@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { PracticeCard } from '../../types';
-import { formatRetentionPeriod } from '../../utils/retention';
+import type { PracticeCard } from '@/types';
+import { formatRetentionPeriod } from '@/utils/retention';
 import styles from './Practice.module.css';
 
 interface PracticeCardViewProps {

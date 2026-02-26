@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import type { Book } from '../../types';
-import { getBookRetention } from '../../utils/retention';
+import type { Book } from '@/types';
+import { getBookRetention } from '@/utils/retention';
 
 interface BookCoverProps {
   book: Book;

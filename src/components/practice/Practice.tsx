@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '../../store/useStore';
-import { selectPracticeConcepts, generatePrompt } from '../../utils/retention';
-import type { PracticeCard } from '../../types';
+import { useStore } from '@/store/useStore';
+import { selectPracticeConcepts, generatePrompt } from '@/utils/retention';
+import type { PracticeCard } from '@/types';
 import { PracticeCardView } from './PracticeCard';
 import { PracticeSummary } from './PracticeSummary';
 import styles from './Practice.module.css';

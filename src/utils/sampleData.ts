@@ -1,4 +1,4 @@
-import type { Book } from '../types';
+import type { Book } from '@/types';
 
 const today = new Date();
 const daysAgo = (d: number) => new Date(today.getTime() - d * 86400000).toISOString();

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { useStore } from '../../store/useStore';
-import { BookCover } from '../shared/BookCover';
-import { getBookRetention } from '../../utils/retention';
+import { useStore } from '@/store/useStore';
+import { BookCover } from '@/components/shared/BookCover';
+import { getBookRetention } from '@/utils/retention';
 import styles from './Library.module.css';
 
 export function Library() {
