@@ -20,6 +20,9 @@ const sourceSans = Source_Sans_3({
 export const metadata: Metadata = {
     title: 'Lasting Pages',
     description: 'A book retention companion that turns reading into lasting wisdom',
+    icons: {
+        icon: '/8832880.png',
+    },
 };
 
 export const viewport: Viewport = {
