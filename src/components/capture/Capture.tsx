@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { searchBooks, type BookSearchResult } from '@/utils/openLibrary';
 import { useDebounce } from '@/hooks/useDebounce';
-import type { Book, Concept } from '@/types';
+import type { Book, Concept, SourceType } from '@/types';
 import styles from './Capture.module.css';
 
 type CaptureStep = 'book' | 'concept' | 'note' | 'done';
@@ -32,6 +32,8 @@ export function Capture() {
   const [conceptContext, setConceptContext] = useState('');
   const [personalNote, setPersonalNote] = useState('');
   const [showMoreFields, setShowMoreFields] = useState(false);
+  const [sourceType, setSourceType] = useState<SourceType>('book');
+  const [skill, setSkill] = useState('');
 
   const debouncedQuery = useDebounce(searchQuery, 350);
 
@@ -80,6 +82,7 @@ export function Capture() {
         id,
         title: selectedResult.title,
         author: selectedResult.author,
+        type: sourceType,
         coverColor: colors.color,
         coverAccent: colors.accent,
         coverImage: selectedResult.coverUrl,
@@ -102,6 +105,7 @@ export function Capture() {
       id,
       title: searchQuery.trim(),
       author: '',
+      type: sourceType,
       coverColor: colors.color,
       coverAccent: colors.accent,
       dateAdded: new Date().toISOString(),
@@ -123,6 +127,7 @@ export function Capture() {
       text: conceptText.trim(),
       context: conceptContext.trim(),
       personalNote: personalNote.trim(),
+      skill: skill.trim() || undefined,
       dateAdded: new Date().toISOString(),
       lastRevisited: null,
       timesRevisited: 0,
@@ -136,6 +141,7 @@ export function Capture() {
     setConceptText('');
     setConceptContext('');
     setPersonalNote('');
+    setSkill('');
     setShowMoreFields(false);
     setStep('concept');
   };
@@ -184,7 +190,20 @@ export function Capture() {
             exit={{ opacity: 0, x: -40 }}
             transition={{ duration: 0.4 }}
           >
-            <h3 className={styles.stepQuestion}>Which book is this from?</h3>
+            <h3 className={styles.stepQuestion}>Where is this from?</h3>
+
+            {/* Source type */}
+            <div className={styles.sourceTypeRow}>
+              {(['book', 'podcast', 'article', 'video', 'other'] as SourceType[]).map((t) => (
+                <button
+                  key={t}
+                  className={`${styles.sourceTypeChip} ${sourceType === t ? styles.sourceTypeActive : ''}`}
+                  onClick={() => setSourceType(t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
 
             {/* Search input */}
             {!selectedBookId && (
@@ -425,6 +444,13 @@ export function Capture() {
                   value={personalNote}
                   onChange={(e) => setPersonalNote(e.target.value)}
                   rows={2}
+                />
+
+                <input
+                  className={styles.skillInput}
+                  placeholder="Skill — e.g. Decision-making, Empathy"
+                  value={skill}
+                  onChange={(e) => setSkill(e.target.value)}
                 />
               </motion.div>
             )}

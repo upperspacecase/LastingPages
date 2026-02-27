@@ -45,7 +45,7 @@ export function Library() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            {books.length} {books.length === 1 ? 'book' : 'books'} &middot; {totalConcepts}{' '}
+            {books.length} {books.length === 1 ? 'source' : 'sources'} &middot; {totalConcepts}{' '}
             {totalConcepts === 1 ? 'idea' : 'ideas'} captured
           </motion.p>
         </div>

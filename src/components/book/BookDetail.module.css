@@ -100,6 +100,20 @@
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Source type badge */
+.typeBadge {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--color-text-tertiary);
+  border: var(--border-thin);
+  border-color: var(--color-border);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+}
+
 /* Retention Visualization */
 .retentionViz {
   width: 100%;
@@ -207,6 +221,19 @@
   font-weight: 600;
   color: var(--color-ink);
   line-height: var(--leading-snug);
+  margin-bottom: var(--space-2);
+}
+
+/* Skill tag */
+.skillTag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  background: var(--color-cream-dark);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-2);
 }
 

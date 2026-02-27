@@ -11,6 +11,7 @@ export function BookDetail() {
   const [newConceptText, setNewConceptText] = useState('');
   const [newConceptContext, setNewConceptContext] = useState('');
   const [newConceptNote, setNewConceptNote] = useState('');
+  const [newConceptSkill, setNewConceptSkill] = useState('');
 
   if (!book) {
     return (
@@ -31,6 +32,7 @@ export function BookDetail() {
       text: newConceptText.trim(),
       context: newConceptContext.trim(),
       personalNote: newConceptNote.trim(),
+      skill: newConceptSkill.trim() || undefined,
       dateAdded: new Date().toISOString(),
       lastRevisited: null,
       timesRevisited: 0,
@@ -39,6 +41,7 @@ export function BookDetail() {
     setNewConceptText('');
     setNewConceptContext('');
     setNewConceptNote('');
+    setNewConceptSkill('');
     setShowAddConcept(false);
   };
 
@@ -87,6 +90,11 @@ export function BookDetail() {
             )}
           </div>
         </motion.div>
+
+        {/* Source type badge */}
+        {book.type && book.type !== 'book' && (
+          <span className={styles.typeBadge}>{book.type}</span>
+        )}
 
         {/* Retention Health — organic visualization */}
         <div className={styles.retentionViz}>
@@ -155,6 +163,9 @@ export function BookDetail() {
                 </div>
                 <div className={styles.conceptBody}>
                   <h3 className={styles.conceptTitle}>{concept.text}</h3>
+                  {concept.skill && (
+                    <span className={styles.skillTag}>{concept.skill}</span>
+                  )}
                   <p className={styles.conceptContext}>{concept.context}</p>
                   {concept.personalNote && (
                     <p className={styles.conceptNote}>
@@ -213,6 +224,13 @@ export function BookDetail() {
               value={newConceptNote}
               onChange={(e) => setNewConceptNote(e.target.value)}
               rows={2}
+            />
+            <input
+              className={styles.addConceptInput}
+              placeholder="Skill — e.g. Decision-making, Empathy"
+              value={newConceptSkill}
+              onChange={(e) => setNewConceptSkill(e.target.value)}
+              style={{ fontWeight: 400, fontSize: 'var(--text-sm)' }}
             />
             <div className={styles.addConceptActions}>
               <button className={styles.cancelButton} onClick={() => setShowAddConcept(false)}>
