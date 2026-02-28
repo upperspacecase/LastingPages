@@ -37,11 +37,9 @@ export function Capture() {
 
   const debouncedQuery = useDebounce(searchQuery, 350);
 
-  const existingBook = selectedBookId ? books.find((b) => b.id === selectedBookId) : null;
-
   // Live search via Open Library
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2 || selectedResult || selectedBookId) {
+    if (!debouncedQuery || debouncedQuery.length < 2 || selectedResult) {
       setSearchResults([]);
       return;
     }
@@ -59,7 +57,7 @@ export function Capture() {
     });
 
     return () => { cancelled = true; };
-  }, [debouncedQuery, selectedResult, selectedBookId]);
+  }, [debouncedQuery, selectedResult]);
 
   const handleSelectSearchResult = (result: BookSearchResult) => {
     setSelectedResult(result);
@@ -68,12 +66,6 @@ export function Capture() {
   };
 
   const handleBookSubmit = () => {
-    // Existing book from library
-    if (selectedBookId) {
-      setStep('concept');
-      return;
-    }
-
     // From Open Library search result
     if (selectedResult) {
       const colors = COVER_COLORS[Math.floor(Math.random() * COVER_COLORS.length)];
@@ -161,7 +153,7 @@ export function Capture() {
     setSelectedBookId(null);
   };
 
-  const currentBook = existingBook || books.find((b) => b.id === selectedBookId);
+  const currentBook = books.find((b) => b.id === selectedBookId);
 
   return (
     <motion.div
@@ -206,8 +198,7 @@ export function Capture() {
             </div>
 
             {/* Search input */}
-            {!selectedBookId && (
-              <div className={styles.searchArea}>
+            <div className={styles.searchArea}>
                 <div className={styles.searchInputWrap}>
                   <input
                     className={styles.searchInput}
@@ -302,73 +293,15 @@ export function Capture() {
                 {/* No results */}
                 {debouncedQuery.length >= 2 && !isSearching && searchResults.length === 0 && !selectedResult && (
                   <p className={styles.searchNoResults}>
-                    No books found — you can still add it manually below.
+                    Nothing found — just type the title and continue.
                   </p>
                 )}
-              </div>
-            )}
-
-            {/* Existing books from library */}
-            {books.length > 0 && !selectedResult && !selectedBookId && (
-              <div className={styles.existingBooks}>
-                <p className={styles.orDivider}>or pick from your library</p>
-                {books.map((book) => (
-                  <button
-                    key={book.id}
-                    className={styles.bookOption}
-                    onClick={() => {
-                      setSelectedBookId(book.id);
-                      setSearchQuery('');
-                      setSearchResults([]);
-                      setSelectedResult(null);
-                    }}
-                  >
-                    {book.coverImage ? (
-                      <img src={book.coverImage} alt="" className={styles.bookOptionThumb} />
-                    ) : (
-                      <div
-                        className={styles.bookOptionDot}
-                        style={{ backgroundColor: book.coverColor }}
-                      />
-                    )}
-                    <div className={styles.bookOptionText}>
-                      <span className={styles.bookOptionTitle}>{book.title}</span>
-                      <span className={styles.bookOptionAuthor}>{book.author}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Selected existing book */}
-            {selectedBookId && existingBook && (
-              <motion.div
-                className={styles.selectedResultCard}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {existingBook.coverImage ? (
-                  <img src={existingBook.coverImage} alt="" className={styles.selectedResultCover} />
-                ) : (
-                  <div
-                    className={styles.bookOptionDot}
-                    style={{ backgroundColor: existingBook.coverColor }}
-                  />
-                )}
-                <div className={styles.selectedResultInfo}>
-                  <span className={styles.selectedResultTitle}>{existingBook.title}</span>
-                  <span className={styles.selectedResultAuthor}>{existingBook.author}</span>
-                </div>
-                <button className={styles.selectedResultChange} onClick={clearSearch}>
-                  Change
-                </button>
-              </motion.div>
-            )}
+            </div>
 
             <button
               className={styles.continueButton}
               onClick={handleBookSubmit}
-              disabled={!selectedBookId && !selectedResult && !searchQuery.trim()}
+              disabled={!selectedResult && !searchQuery.trim()}
             >
               Continue
             </button>
@@ -390,9 +323,13 @@ export function Capture() {
                 <img src={currentBook.coverImage} alt="" className={styles.stepBookThumb} />
               ) : (
                 <div
-                  className={styles.bookOptionDot}
                   style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    flexShrink: 0,
                     backgroundColor: currentBook?.coverColor || 'var(--color-accent)',
+                    border: '1.5px solid var(--color-ink)',
                   }}
                 />
               )}
