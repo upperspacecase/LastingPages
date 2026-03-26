@@ -36,6 +36,21 @@
   letter-spacing: 0.1em;
 }
 
+.signOut {
+  pointer-events: auto;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  margin-top: 4px;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.signOut:hover {
+  color: var(--text-main);
+}
+
 /* 3D Carousel */
 
 .viewport {

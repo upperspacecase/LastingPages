@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useStore } from '@/store/useStore';
+import { useAuth } from '@/hooks/useAuth';
 import { searchBooks, type BookSearchResult } from '@/utils/openLibrary';
 import { useDebounce } from '@/hooks/useDebounce';
 import type { Book } from '@/types';
@@ -9,6 +10,7 @@ import styles from './Library.module.css';
 
 export function Library() {
   const { books, addBook, selectBook, searchQuery, setSearchQuery } = useStore();
+  const { signOut, isConfigured } = useAuth();
   const [olResults, setOlResults] = useState<BookSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
 
@@ -228,6 +230,12 @@ export function Library() {
         <div className={styles.meta}>
           {books.length} {books.length === 1 ? 'SOURCE' : 'SOURCES'}<br />
           {totalHighlights} {totalHighlights === 1 ? 'HIGHLIGHT' : 'HIGHLIGHTS'}
+          {isConfigured && (
+            <>
+              <br />
+              <button className={styles.signOut} onClick={signOut}>SIGN OUT</button>
+            </>
+          )}
         </div>
       </header>
 
