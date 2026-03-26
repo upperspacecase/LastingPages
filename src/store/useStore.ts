@@ -17,6 +17,7 @@ interface AppState {
 
   addConcept: (bookId: string, concept: Concept) => void;
   updateConcept: (bookId: string, conceptId: string, updates: Partial<Concept>) => void;
+  removeConcept: (bookId: string, conceptId: string) => void;
 
   hydrated: boolean;
   hydrateFromServer: () => Promise<void>;
@@ -99,6 +100,19 @@ export const useStore = create<AppState>()(
           body: JSON.stringify({ conceptId, ...updates }),
         });
       },
+      removeConcept: (bookId, conceptId) => {
+        set((state) => ({
+          books: state.books.map((b) =>
+            b.id === bookId
+              ? { ...b, concepts: b.concepts.filter((c) => c.id !== conceptId) }
+              : b
+          ),
+        }));
+        apiCall(`/api/books/${bookId}/concepts`, {
+          method: 'DELETE',
+          body: JSON.stringify({ conceptId }),
+        });
+      },
 
       hydrated: false,
       hydrateFromServer: async () => {
@@ -106,7 +120,7 @@ export const useStore = create<AppState>()(
           const res = await fetch('/api/books');
           if (res.ok) {
             const books = await res.json();
-            if (Array.isArray(books) && books.length > 0) {
+            if (Array.isArray(books)) {
               set({ books, hydrated: true });
               return;
             }
@@ -114,6 +128,7 @@ export const useStore = create<AppState>()(
         } catch (err) {
           console.error('Failed to hydrate from server:', err);
         }
+        // Server failed — fall back to whatever persist loaded
         set({ hydrated: true });
       },
     }),

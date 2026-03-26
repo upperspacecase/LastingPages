@@ -38,9 +38,11 @@ const TOP_BOOKS = [
 
 interface LandingProps {
   onSignIn: () => void;
+  error?: string | null;
+  onClearError?: () => void;
 }
 
-export function Landing({ onSignIn }: LandingProps) {
+export function Landing({ onSignIn, error, onClearError }: LandingProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollState = useRef({
@@ -177,6 +179,12 @@ export function Landing({ onSignIn }: LandingProps) {
         <button className={styles.ctaButton} onClick={onSignIn}>
           GET STARTED
         </button>
+        {error && (
+          <div className={styles.error}>
+            <span>{error}</span>
+            <button className={styles.errorDismiss} onClick={onClearError}>dismiss</button>
+          </div>
+        )}
       </div>
 
       <div className={styles.overlay} id="overlay">

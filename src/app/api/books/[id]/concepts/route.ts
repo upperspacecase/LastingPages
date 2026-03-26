@@ -82,3 +82,32 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         return NextResponse.json({ error: 'Failed to update concept' }, { status: 500 });
     }
 }
+
+// DELETE /api/books/[id]/concepts — remove a concept from a book
+export async function DELETE(request: Request, { params }: RouteParams) {
+    try {
+        await dbConnect();
+        const { id } = await params;
+        const body = await request.json();
+        const { conceptId } = body;
+
+        if (!conceptId) {
+            return NextResponse.json({ error: 'conceptId is required' }, { status: 400 });
+        }
+
+        const book = await Book.findByIdAndUpdate(
+            id,
+            { $pull: { concepts: { _id: conceptId } } },
+            { new: true }
+        );
+
+        if (!book) {
+            return NextResponse.json({ error: 'Book not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('DELETE /api/books/[id]/concepts error:', error);
+        return NextResponse.json({ error: 'Failed to delete concept' }, { status: 500 });
+    }
+}

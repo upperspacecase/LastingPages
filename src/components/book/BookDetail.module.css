@@ -3,11 +3,15 @@
   margin: 0 auto;
   padding: 24px 32px 80px;
   min-height: 100vh;
+  opacity: 0;
   animation: fadeIn 0.4s ease forwards;
 }
 
 .header {
   margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back {
@@ -19,6 +23,53 @@
 }
 
 .back:hover {
+  color: var(--text-main);
+}
+
+.deleteBook {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  transition: color 0.3s;
+}
+
+.deleteBook:hover {
+  color: #b44;
+}
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirmText {
+  font-size: 11px;
+  color: #b44;
+}
+
+.confirmYes,
+.confirmNo {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: color 0.3s;
+}
+
+.confirmYes {
+  color: #b44;
+}
+
+.confirmYes:hover {
+  color: #922;
+}
+
+.confirmNo {
+  color: var(--text-sub);
+}
+
+.confirmNo:hover {
   color: var(--text-main);
 }
 
@@ -93,6 +144,30 @@
   line-height: 1.5;
 }
 
+.highlightActions {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.highlight:hover .highlightActions {
+  opacity: 1;
+}
+
+.actionBtn {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  transition: color 0.3s;
+}
+
+.actionBtn:hover {
+  color: var(--text-main);
+}
+
 .addButton {
   display: block;
   margin-top: 20px;
@@ -152,4 +227,20 @@
 .saveBtn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px 16px 80px;
+  }
+
+  .highlightActions {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }

@@ -25,6 +25,7 @@ export function Library() {
     target: 0,
     velocity: 0,
     isDragging: false,
+    isHovering: false,
     lastX: 0,
     dragDistance: 0,
   });
@@ -47,7 +48,7 @@ export function Library() {
       if (!state.isDragging) {
         state.target += state.velocity;
         state.velocity *= 0.95;
-        if (!searchActiveRef.current) {
+        if (!searchActiveRef.current && !state.isHovering) {
           state.target += AUTO_SPEED;
         }
       }
@@ -122,12 +123,17 @@ export function Library() {
     const te = () => onUp();
     const tm = (e: TouchEvent) => onMove(e.touches[0].clientX);
 
+    const enter = () => { state.isHovering = true; };
+    const leave = () => { state.isHovering = false; };
+
     vp.addEventListener('mousedown', md);
     window.addEventListener('mouseup', mu);
     window.addEventListener('mousemove', mm);
     vp.addEventListener('touchstart', ts);
     window.addEventListener('touchend', te);
     window.addEventListener('touchmove', tm);
+    vp.addEventListener('mouseenter', enter);
+    vp.addEventListener('mouseleave', leave);
 
     return () => {
       vp.removeEventListener('mousedown', md);
@@ -136,11 +142,13 @@ export function Library() {
       vp.removeEventListener('touchstart', ts);
       window.removeEventListener('touchend', te);
       window.removeEventListener('touchmove', tm);
+      vp.removeEventListener('mouseenter', enter);
+      vp.removeEventListener('mouseleave', leave);
     };
   }, []);
 
   const handleCardClick = useCallback((bookId: string) => {
-    if (scrollState.current.dragDistance > 5) return;
+    if (scrollState.current.dragDistance > 10) return;
     selectBook(bookId);
   }, [selectBook]);
 
@@ -256,6 +264,10 @@ export function Library() {
                     <span className={styles.cardFallbackText}>{book.title}</span>
                   </div>
                 )}
+                <div className={styles.cardLabel}>
+                  <span className={styles.cardTitle}>{book.title}</span>
+                  {book.author && <span className={styles.cardAuthor}>{book.author}</span>}
+                </div>
               </div>
             ))}
           </div>
@@ -263,6 +275,7 @@ export function Library() {
       ) : (
         <div className={styles.emptyCenter}>
           <p className={styles.emptyText}>your library is empty.</p>
+          <p className={styles.emptyHint}>use the search bar below to add your first book.</p>
         </div>
       )}
 

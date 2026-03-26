@@ -3,11 +3,15 @@ import { useStore } from '@/store/useStore';
 import styles from './BookDetail.module.css';
 
 export function BookDetail() {
-  const { books, selectedBookId, selectBook, addConcept } = useStore();
+  const { books, selectedBookId, selectBook, addConcept, updateConcept, removeConcept, removeBook } = useStore();
   const book = books.find(b => b.id === selectedBookId);
   const [adding, setAdding] = useState(false);
   const [highlightText, setHighlightText] = useState('');
   const [noteText, setNoteText] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   if (!book) {
     return (
@@ -36,12 +40,47 @@ export function BookDetail() {
     setAdding(false);
   };
 
+  const handleStartEdit = (concept: typeof book.concepts[0]) => {
+    setEditingId(concept.id);
+    setEditText(concept.text);
+    setEditNote(concept.personalNote);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingId || !editText.trim()) return;
+    updateConcept(book.id, editingId, {
+      text: editText.trim(),
+      personalNote: editNote.trim(),
+    });
+    setEditingId(null);
+  };
+
+  const handleDeleteConcept = (conceptId: string) => {
+    removeConcept(book.id, conceptId);
+  };
+
+  const handleDeleteBook = () => {
+    removeBook(book.id);
+    selectBook(null);
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <button className={styles.back} onClick={() => selectBook(null)}>
           &larr; BACK
         </button>
+        {!confirmDelete ? (
+          <button className={styles.deleteBook} onClick={() => setConfirmDelete(true)}>
+            DELETE BOOK
+          </button>
+        ) : (
+          <div className={styles.confirmRow}>
+            <span className={styles.confirmText}>delete this book?</span>
+            <button className={styles.confirmYes} onClick={handleDeleteBook}>YES</button>
+            <button className={styles.confirmNo} onClick={() => setConfirmDelete(false)}>NO</button>
+          </div>
+        )}
       </header>
 
       <div className={styles.bookInfo}>
@@ -66,12 +105,49 @@ export function BookDetail() {
 
         {book.concepts.map(concept => (
           <div key={concept.id} className={styles.highlight}>
-            <p className={styles.highlightText}>{concept.text}</p>
-            {concept.personalNote && (
-              <p className={styles.highlightNote}>{concept.personalNote}</p>
-            )}
-            {concept.context && !concept.personalNote && (
-              <p className={styles.highlightNote}>{concept.context}</p>
+            {editingId === concept.id ? (
+              <div className={styles.addForm}>
+                <textarea
+                  className={styles.input}
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  rows={3}
+                  autoFocus
+                />
+                <textarea
+                  className={styles.input}
+                  placeholder="your note (optional)"
+                  value={editNote}
+                  onChange={(e) => setEditNote(e.target.value)}
+                  rows={2}
+                />
+                <div className={styles.formActions}>
+                  <button className={styles.cancelBtn} onClick={() => setEditingId(null)}>
+                    CANCEL
+                  </button>
+                  <button
+                    className={styles.saveBtn}
+                    onClick={handleSaveEdit}
+                    disabled={!editText.trim()}
+                  >
+                    SAVE
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className={styles.highlightText}>{concept.text}</p>
+                {concept.personalNote && (
+                  <p className={styles.highlightNote}>{concept.personalNote}</p>
+                )}
+                {concept.context && !concept.personalNote && (
+                  <p className={styles.highlightNote}>{concept.context}</p>
+                )}
+                <div className={styles.highlightActions}>
+                  <button className={styles.actionBtn} onClick={() => handleStartEdit(concept)}>EDIT</button>
+                  <button className={styles.actionBtn} onClick={() => handleDeleteConcept(concept.id)}>DELETE</button>
+                </div>
+              </>
             )}
           </div>
         ))}

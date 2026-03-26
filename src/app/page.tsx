@@ -8,8 +8,8 @@ import { Landing } from '@/components/landing/Landing';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const { currentView, hydrateFromServer } = useStore();
-  const { user, loading, signIn, isConfigured } = useAuth();
+  const { currentView, hydrated, hydrateFromServer } = useStore();
+  const { user, loading, error, clearError, signIn, signOut, isConfigured } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -22,9 +22,19 @@ export default function Home() {
     }
   }, [mounted, user, isConfigured, hydrateFromServer]);
 
-  if (!mounted || loading) return null;
+  const showLoader = !mounted || loading || (!isConfigured && !hydrated) || (isConfigured && user && !hydrated);
 
-  if (isConfigured && !user) return <Landing onSignIn={signIn} />;
+  if (showLoader) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: '#888', fontFamily: 'Courier New, monospace' }}>
+          LOADING...
+        </span>
+      </div>
+    );
+  }
+
+  if (isConfigured && !user) return <Landing onSignIn={signIn} error={error} onClearError={clearError} />;
 
   if (currentView === 'book-detail') return <BookDetail />;
   return <Library />;
