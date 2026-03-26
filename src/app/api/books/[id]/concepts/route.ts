@@ -23,6 +23,7 @@ export async function POST(request: Request, { params }: RouteParams) {
                         text: body.text,
                         context: body.context || '',
                         personalNote: body.personalNote || '',
+                        skill: body.skill || '',
                         dateAdded: body.dateAdded,
                         lastRevisited: body.lastRevisited || null,
                         timesRevisited: body.timesRevisited || 0,

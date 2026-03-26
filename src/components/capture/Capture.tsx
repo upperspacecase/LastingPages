@@ -1,435 +1,151 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/store/useStore';
 import { searchBooks, type BookSearchResult } from '@/utils/openLibrary';
 import { useDebounce } from '@/hooks/useDebounce';
-import type { Book, Concept, SourceType } from '@/types';
+import type { Book, SourceType } from '@/types';
 import styles from './Capture.module.css';
 
-type CaptureStep = 'book' | 'concept' | 'note' | 'done';
-
-const COVER_COLORS = [
-  { color: '#3B5998', accent: '#8B9DC3' },
-  { color: '#6B4E3D', accent: '#C4956A' },
-  { color: '#87CEEB', accent: '#4682B4' },
-  { color: '#2E8B57', accent: '#90EE90' },
-  { color: '#9370DB', accent: '#DDA0DD' },
-  { color: '#CD5C5C', accent: '#F08080' },
-  { color: '#708090', accent: '#B0C4DE' },
-  { color: '#DAA520', accent: '#F0E68C' },
-];
-
 export function Capture() {
-  const { books, addBook, addConcept, setView, selectBook } = useStore();
-
-  const [step, setStep] = useState<CaptureStep>('book');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedResult, setSelectedResult] = useState<BookSearchResult | null>(null);
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  const [conceptText, setConceptText] = useState('');
-  const [conceptContext, setConceptContext] = useState('');
-  const [personalNote, setPersonalNote] = useState('');
-  const [showMoreFields, setShowMoreFields] = useState(false);
+  const { addBook, setView, selectBook } = useStore();
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<BookSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selected, setSelected] = useState<BookSearchResult | null>(null);
   const [sourceType, setSourceType] = useState<SourceType>('book');
-  const [skill, setSkill] = useState('');
 
-  const debouncedQuery = useDebounce(searchQuery, 350);
+  const debouncedQuery = useDebounce(query, 350);
 
-  // Live search via Open Library
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2 || selectedResult) {
-      setSearchResults([]);
+    if (!debouncedQuery || debouncedQuery.length < 2 || selected) {
+      setResults([]);
       return;
     }
-
     let cancelled = false;
-    setIsSearching(true);
-
-    searchBooks(debouncedQuery, 6).then((results) => {
-      if (!cancelled) {
-        setSearchResults(results);
-        setIsSearching(false);
-      }
-    }).catch(() => {
-      if (!cancelled) setIsSearching(false);
-    });
-
+    setSearching(true);
+    searchBooks(debouncedQuery, 6)
+      .then(r => {
+        if (!cancelled) { setResults(r); setSearching(false); }
+      })
+      .catch(() => {
+        if (!cancelled) setSearching(false);
+      });
     return () => { cancelled = true; };
-  }, [debouncedQuery, selectedResult]);
+  }, [debouncedQuery, selected]);
 
-  const handleSelectSearchResult = (result: BookSearchResult) => {
-    setSelectedResult(result);
-    setSearchQuery(result.title);
-    setSearchResults([]);
+  const handleSelect = (result: BookSearchResult) => {
+    setSelected(result);
+    setQuery(result.title);
+    setResults([]);
   };
 
-  const handleBookSubmit = () => {
-    // From Open Library search result
-    if (selectedResult) {
-      const colors = COVER_COLORS[Math.floor(Math.random() * COVER_COLORS.length)];
-      const id = `b-${Date.now()}`;
-      const newBook: Book = {
-        id,
-        title: selectedResult.title,
-        author: selectedResult.author,
-        type: sourceType,
-        coverColor: colors.color,
-        coverAccent: colors.accent,
-        coverImage: selectedResult.coverUrl,
-        dateAdded: new Date().toISOString(),
-        lastRevisited: null,
-        concepts: [],
-        notes: '',
-      };
-      addBook(newBook);
-      setSelectedBookId(id);
-      setStep('concept');
-      return;
-    }
-
-    // Manual entry (no search result selected)
-    if (!searchQuery.trim()) return;
-    const colors = COVER_COLORS[Math.floor(Math.random() * COVER_COLORS.length)];
+  const handleSubmit = () => {
+    if (!selected && !query.trim()) return;
     const id = `b-${Date.now()}`;
-    const newBook: Book = {
+    const book: Book = {
       id,
-      title: searchQuery.trim(),
-      author: '',
+      title: selected ? selected.title : query.trim(),
+      author: selected ? selected.author : '',
       type: sourceType,
-      coverColor: colors.color,
-      coverAccent: colors.accent,
+      coverColor: '#e0e0e0',
+      coverAccent: '#d0d0d0',
+      coverImage: selected?.coverUrl,
       dateAdded: new Date().toISOString(),
       lastRevisited: null,
       concepts: [],
       notes: '',
     };
-    addBook(newBook);
-    setSelectedBookId(id);
-    setStep('concept');
+    addBook(book);
+    selectBook(id);
   };
 
-  const handleConceptSubmit = () => {
-    if (!conceptText.trim() || !selectedBookId) return;
-
-    const concept: Concept = {
-      id: `c-${Date.now()}`,
-      bookId: selectedBookId,
-      text: conceptText.trim(),
-      context: conceptContext.trim(),
-      personalNote: personalNote.trim(),
-      skill: skill.trim() || undefined,
-      dateAdded: new Date().toISOString(),
-      lastRevisited: null,
-      timesRevisited: 0,
-      retentionDays: 0,
-    };
-    addConcept(selectedBookId, concept);
-    setStep('done');
+  const clear = () => {
+    setSelected(null);
+    setQuery('');
+    setResults([]);
   };
-
-  const handleAddAnother = () => {
-    setConceptText('');
-    setConceptContext('');
-    setPersonalNote('');
-    setSkill('');
-    setShowMoreFields(false);
-    setStep('concept');
-  };
-
-  const handleFinish = () => {
-    if (selectedBookId) {
-      selectBook(selectedBookId);
-    } else {
-      setView('library');
-    }
-  };
-
-  const clearSearch = () => {
-    setSelectedResult(null);
-    setSearchQuery('');
-    setSearchResults([]);
-    setSelectedBookId(null);
-  };
-
-  const currentBook = books.find((b) => b.id === selectedBookId);
 
   return (
-    <motion.div
-      className={styles.capture}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Header */}
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={() => setView('library')}>
-          &larr;
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <button className={styles.back} onClick={() => setView('library')}>
+          &larr; BACK
         </button>
-        <h2 className={styles.headerTitle}>Capture</h2>
-        <div className={styles.headerSpacer} />
+        <span className={styles.headerTitle}>ADD SOURCE</span>
+        <div className={styles.spacer} />
+      </header>
+
+      <div className={styles.typeRow}>
+        {(['book', 'podcast', 'article', 'video', 'other'] as SourceType[]).map(t => (
+          <button
+            key={t}
+            className={`${styles.typeChip} ${sourceType === t ? styles.typeActive : ''}`}
+            onClick={() => setSourceType(t)}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
-      <AnimatePresence mode="wait">
-        {/* Step 1: Book Selection */}
-        {step === 'book' && (
-          <motion.div
-            key="book"
-            className={styles.stepContainer}
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.4 }}
-          >
-            <h3 className={styles.stepQuestion}>Where is this from?</h3>
-
-            {/* Source type */}
-            <div className={styles.sourceTypeRow}>
-              {(['book', 'podcast', 'article', 'video', 'other'] as SourceType[]).map((t) => (
-                <button
-                  key={t}
-                  className={`${styles.sourceTypeChip} ${sourceType === t ? styles.sourceTypeActive : ''}`}
-                  onClick={() => setSourceType(t)}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            {/* Search input */}
-            <div className={styles.searchArea}>
-                <div className={styles.searchInputWrap}>
-                  <input
-                    className={styles.searchInput}
-                    placeholder="Search by title or author..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setSelectedResult(null);
-                    }}
-                    autoFocus
-                  />
-                  {(searchQuery || selectedResult) && (
-                    <button className={styles.searchClear} onClick={clearSearch}>
-                      &times;
-                    </button>
-                  )}
-                </div>
-
-                {/* Loading indicator */}
-                {isSearching && (
-                  <p className={styles.searchStatus}>Reading alongside you...</p>
-                )}
-
-                {/* Selected result preview */}
-                {selectedResult && (
-                  <motion.div
-                    className={styles.selectedResultCard}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {selectedResult.coverUrl && (
-                      <img
-                        src={selectedResult.coverUrl}
-                        alt=""
-                        className={styles.selectedResultCover}
-                      />
-                    )}
-                    <div className={styles.selectedResultInfo}>
-                      <span className={styles.selectedResultTitle}>{selectedResult.title}</span>
-                      <span className={styles.selectedResultAuthor}>{selectedResult.author}</span>
-                      {selectedResult.year && (
-                        <span className={styles.selectedResultMeta}>
-                          {selectedResult.year}
-                          {selectedResult.pageCount ? ` · ${selectedResult.pageCount} pages` : ''}
-                        </span>
-                      )}
-                    </div>
-                    <button className={styles.selectedResultChange} onClick={clearSearch}>
-                      Change
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* Search results dropdown */}
-                {searchResults.length > 0 && !selectedResult && (
-                  <motion.div
-                    className={styles.searchResults}
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {searchResults.map((result) => (
-                      <button
-                        key={result.olKey}
-                        className={styles.searchResultItem}
-                        onClick={() => handleSelectSearchResult(result)}
-                      >
-                        {result.coverUrl ? (
-                          <img
-                            src={result.coverUrl}
-                            alt=""
-                            className={styles.searchResultCover}
-                          />
-                        ) : (
-                          <div className={styles.searchResultNoCover}>
-                            <span className={styles.searchResultNoCoverText}>No cover</span>
-                          </div>
-                        )}
-                        <div className={styles.searchResultInfo}>
-                          <span className={styles.searchResultTitle}>{result.title}</span>
-                          <span className={styles.searchResultAuthor}>
-                            {result.author}
-                            {result.year ? ` (${result.year})` : ''}
-                          </span>
-                        </div>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-
-                {/* No results */}
-                {debouncedQuery.length >= 2 && !isSearching && searchResults.length === 0 && !selectedResult && (
-                  <p className={styles.searchNoResults}>
-                    Nothing found — just type the title and continue.
-                  </p>
-                )}
-            </div>
-
-            <button
-              className={styles.continueButton}
-              onClick={handleBookSubmit}
-              disabled={!selectedResult && !searchQuery.trim()}
-            >
-              Continue
-            </button>
-          </motion.div>
+      <div className={styles.searchWrap}>
+        <input
+          className={styles.searchInput}
+          placeholder="search by title or author..."
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setSelected(null); }}
+          autoFocus
+        />
+        {query && (
+          <button className={styles.clearBtn} onClick={clear}>&times;</button>
         )}
+      </div>
 
-        {/* Step 2: Key Concept */}
-        {step === 'concept' && (
-          <motion.div
-            key="concept"
-            className={styles.stepContainer}
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className={styles.stepBookContext}>
-              {currentBook?.coverImage ? (
-                <img src={currentBook.coverImage} alt="" className={styles.stepBookThumb} />
+      {searching && <p className={styles.status}>searching...</p>}
+
+      {selected && (
+        <div className={styles.selectedCard}>
+          {selected.coverUrl && (
+            <img src={selected.coverUrl} alt="" className={styles.selectedCover} />
+          )}
+          <div className={styles.selectedInfo}>
+            <span className={styles.selectedTitle}>{selected.title}</span>
+            <span className={styles.selectedAuthor}>{selected.author}</span>
+            {selected.year && <span className={styles.selectedMeta}>{selected.year}</span>}
+          </div>
+          <button className={styles.changeBtn} onClick={clear}>CHANGE</button>
+        </div>
+      )}
+
+      {results.length > 0 && !selected && (
+        <div className={styles.results}>
+          {results.map(r => (
+            <button key={r.olKey} className={styles.resultItem} onClick={() => handleSelect(r)}>
+              {r.coverUrl ? (
+                <img src={r.coverUrl} alt="" className={styles.resultCover} />
               ) : (
-                <div
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    backgroundColor: currentBook?.coverColor || 'var(--color-accent)',
-                    border: '1.5px solid var(--color-ink)',
-                  }}
-                />
+                <div className={styles.resultNoCover} />
               )}
-              <span className={styles.stepBookTitle}>
-                {currentBook?.title || searchQuery}
-              </span>
-            </div>
-
-            <h3 className={styles.stepQuestion}>
-              What's the key idea you want to hold onto?
-            </h3>
-
-            <textarea
-              className={styles.textarea}
-              placeholder="The concept, insight, or framework..."
-              value={conceptText}
-              onChange={(e) => setConceptText(e.target.value)}
-              rows={3}
-              autoFocus
-            />
-
-            {!showMoreFields && (
-              <button
-                className={styles.addMoreButton}
-                onClick={() => setShowMoreFields(true)}
-              >
-                + Add context or a personal note
-              </button>
-            )}
-
-            {showMoreFields && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                transition={{ duration: 0.3 }}
-              >
-                <textarea
-                  className={styles.textarea}
-                  placeholder="Some context — what does this idea mean?"
-                  value={conceptContext}
-                  onChange={(e) => setConceptContext(e.target.value)}
-                  rows={3}
-                  autoFocus
-                />
-
-                <textarea
-                  className={styles.textarea}
-                  placeholder="Why does it matter to you?"
-                  value={personalNote}
-                  onChange={(e) => setPersonalNote(e.target.value)}
-                  rows={2}
-                />
-
-                <input
-                  className={styles.skillInput}
-                  placeholder="Skill — e.g. Decision-making, Empathy"
-                  value={skill}
-                  onChange={(e) => setSkill(e.target.value)}
-                />
-              </motion.div>
-            )}
-
-            <button
-              className={styles.continueButton}
-              onClick={handleConceptSubmit}
-              disabled={!conceptText.trim()}
-            >
-              Save this idea
+              <div className={styles.resultInfo}>
+                <span className={styles.resultTitle}>{r.title}</span>
+                <span className={styles.resultAuthor}>
+                  {r.author}{r.year ? ` (${r.year})` : ''}
+                </span>
+              </div>
             </button>
-          </motion.div>
-        )}
+          ))}
+        </div>
+      )}
 
-        {/* Step 3: Done */}
-        {step === 'done' && (
-          <motion.div
-            key="done"
-            className={styles.stepContainer}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.doneIcon}>&#10003;</div>
-            <h3 className={styles.doneTitle}>Safely kept</h3>
-            <p className={styles.doneText}>
-              This idea has been added to your library. It will appear in your
-              daily practice when it's ready to be revisited.
-            </p>
+      {debouncedQuery.length >= 2 && !searching && results.length === 0 && !selected && (
+        <p className={styles.noResults}>nothing found -- just type the title and continue.</p>
+      )}
 
-            <div className={styles.doneActions}>
-              <button className={styles.addAnotherButton} onClick={handleAddAnother}>
-                Add another idea
-              </button>
-              <button className={styles.finishButton} onClick={handleFinish}>
-                View in your library
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      <button
+        className={styles.submitBtn}
+        onClick={handleSubmit}
+        disabled={!selected && !query.trim()}
+      >
+        ADD TO LIBRARY
+      </button>
+    </div>
   );
 }

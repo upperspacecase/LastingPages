@@ -27,35 +27,4 @@ export interface Concept {
   retentionDays: number;
 }
 
-export interface PracticeCard {
-  concept: Concept;
-  book: Book;
-  promptType: 'free-recall' | 'connection' | 'interpretation';
-  prompt: string;
-  interpretations?: string[];
-  correctIndex?: number;
-}
-
-export interface PracticeSession {
-  date: string;
-  cards: PracticeCard[];
-  completed: boolean;
-  reflections: Reflection[];
-}
-
-export interface Reflection {
-  conceptId: string;
-  response: string;
-  timestamp: string;
-  renewed: boolean;
-}
-
-export type AppView = 'onboarding' | 'library' | 'practice' | 'book-detail' | 'capture';
-
-export interface OnboardingState {
-  step: number;
-  name: string;
-  favoriteBook: string;
-  interests: string[];
-  completed: boolean;
-}
+export type AppView = 'library' | 'book-detail' | 'capture';

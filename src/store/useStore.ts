@@ -1,52 +1,27 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Book, Concept, AppView, OnboardingState, Reflection } from '@/types';
-import { sampleBooks } from '@/utils/sampleData';
+import type { Book, Concept, AppView } from '@/types';
 
 interface AppState {
-  // Navigation
   currentView: AppView;
   selectedBookId: string | null;
+  searchQuery: string;
   setView: (view: AppView) => void;
   selectBook: (id: string | null) => void;
+  setSearchQuery: (query: string) => void;
 
-  // Onboarding
-  onboarding: OnboardingState;
-  setOnboardingStep: (step: number) => void;
-  setOnboardingName: (name: string) => void;
-  setOnboardingFavoriteBook: (book: string) => void;
-  setOnboardingInterests: (interests: string[]) => void;
-  completeOnboarding: () => void;
-
-  // Library
   books: Book[];
   addBook: (book: Book) => void;
   removeBook: (id: string) => void;
   updateBook: (id: string, updates: Partial<Book>) => void;
 
-  // Concepts
   addConcept: (bookId: string, concept: Concept) => void;
   updateConcept: (bookId: string, conceptId: string, updates: Partial<Concept>) => void;
 
-  // Practice
-  practiceActive: boolean;
-  currentCardIndex: number;
-  reflections: Reflection[];
-  startPractice: () => void;
-  endPractice: () => void;
-  setCardIndex: (index: number) => void;
-  addReflection: (reflection: Reflection) => void;
-  markConceptRevisited: (bookId: string, conceptId: string) => void;
-
-  // Seed demo data
-  seedDemoData: () => void;
-
-  // Server sync
   hydrated: boolean;
   hydrateFromServer: () => Promise<void>;
 }
 
-// Fire-and-forget API helper — doesn't block the UI
 async function apiCall(url: string, options?: RequestInit) {
   try {
     const res = await fetch(url, {
@@ -66,51 +41,16 @@ async function apiCall(url: string, options?: RequestInit) {
 export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
-      // Navigation
-      currentView: 'onboarding',
+      currentView: 'library',
       selectedBookId: null,
+      searchQuery: '',
       setView: (view) => set({ currentView: view }),
       selectBook: (id) => set({ selectedBookId: id, currentView: id ? 'book-detail' : 'library' }),
+      setSearchQuery: (query) => set({ searchQuery: query }),
 
-      // Onboarding
-      onboarding: {
-        step: 0,
-        name: '',
-        favoriteBook: '',
-        interests: [],
-        completed: false,
-      },
-      setOnboardingStep: (step) =>
-        set((state) => ({ onboarding: { ...state.onboarding, step } })),
-      setOnboardingName: (name) =>
-        set((state) => ({ onboarding: { ...state.onboarding, name } })),
-      setOnboardingFavoriteBook: (book) =>
-        set((state) => ({ onboarding: { ...state.onboarding, favoriteBook: book } })),
-      setOnboardingInterests: (interests) =>
-        set((state) => ({ onboarding: { ...state.onboarding, interests } })),
-      completeOnboarding: () => {
-        const state = get();
-        set({
-          onboarding: { ...state.onboarding, completed: true },
-          currentView: 'library',
-        });
-        // Persist profile to MongoDB
-        apiCall('/api/profile', {
-          method: 'POST',
-          body: JSON.stringify({
-            name: state.onboarding.name,
-            favoriteBook: state.onboarding.favoriteBook,
-            interests: state.onboarding.interests,
-            onboardingCompleted: true,
-          }),
-        });
-      },
-
-      // Library
       books: [],
       addBook: (book) => {
         set((state) => ({ books: [...state.books, book] }));
-        // Persist to MongoDB
         apiCall('/api/books', {
           method: 'POST',
           body: JSON.stringify(book),
@@ -130,7 +70,6 @@ export const useStore = create<AppState>()(
         });
       },
 
-      // Concepts
       addConcept: (bookId, concept) => {
         set((state) => ({
           books: state.books.map((b) =>
@@ -147,11 +86,11 @@ export const useStore = create<AppState>()(
           books: state.books.map((b) =>
             b.id === bookId
               ? {
-                ...b,
-                concepts: b.concepts.map((c) =>
-                  c.id === conceptId ? { ...c, ...updates } : c
-                ),
-              }
+                  ...b,
+                  concepts: b.concepts.map((c) =>
+                    c.id === conceptId ? { ...c, ...updates } : c
+                  ),
+                }
               : b
           ),
         }));
@@ -161,73 +100,6 @@ export const useStore = create<AppState>()(
         });
       },
 
-      // Practice
-      practiceActive: false,
-      currentCardIndex: 0,
-      reflections: [],
-      startPractice: () => set({ practiceActive: true, currentCardIndex: 0, reflections: [] }),
-      endPractice: () => set({ practiceActive: false, currentCardIndex: 0 }),
-      setCardIndex: (index) => set({ currentCardIndex: index }),
-      addReflection: (reflection) =>
-        set((state) => ({ reflections: [...state.reflections, reflection] })),
-      markConceptRevisited: (bookId, conceptId) => {
-        const now = new Date().toISOString();
-        set((state) => ({
-          books: state.books.map((b) =>
-            b.id === bookId
-              ? {
-                ...b,
-                lastRevisited: now,
-                concepts: b.concepts.map((c) =>
-                  c.id === conceptId
-                    ? {
-                      ...c,
-                      lastRevisited: now,
-                      timesRevisited: c.timesRevisited + 1,
-                      retentionDays:
-                        Math.floor(
-                          (new Date().getTime() - new Date(c.dateAdded).getTime()) / 86400000
-                        ),
-                    }
-                    : c
-                ),
-              }
-              : b
-          ),
-        }));
-        // Sync revisit data to MongoDB
-        const book = get().books.find((b) => b.id === bookId);
-        const concept = book?.concepts.find((c) => c.id === conceptId);
-        if (concept) {
-          apiCall(`/api/books/${bookId}/concepts`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-              conceptId,
-              lastRevisited: concept.lastRevisited,
-              timesRevisited: concept.timesRevisited,
-              retentionDays: concept.retentionDays,
-            }),
-          });
-        }
-        if (book) {
-          apiCall(`/api/books/${bookId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ lastRevisited: now }),
-          });
-        }
-      },
-
-      // Demo data
-      seedDemoData: () => {
-        const state = get();
-        if (state.books.length === 0) {
-          set({ books: sampleBooks });
-          // Seed to MongoDB
-          apiCall('/api/books/seed', { method: 'POST' });
-        }
-      },
-
-      // Server hydration
       hydrated: false,
       hydrateFromServer: async () => {
         try {
