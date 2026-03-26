@@ -1,7 +1,7 @@
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 24px 32px 100px;
+  padding: 24px 32px 80px;
   min-height: 100vh;
   animation: fadeIn 0.6s ease forwards;
 }
@@ -29,6 +29,8 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
+
+/* Search */
 
 .searchWrap {
   position: relative;
@@ -65,6 +67,8 @@
   opacity: 1;
 }
 
+/* Sections */
+
 .section {
   margin-bottom: 32px;
 }
@@ -76,6 +80,8 @@
   color: var(--text-sub);
   margin-bottom: 16px;
 }
+
+/* Book grid */
 
 .grid {
   display: grid;
@@ -147,6 +153,8 @@
   letter-spacing: 0.1em;
 }
 
+/* Highlight search results */
+
 .highlightResults {
   display: flex;
   flex-direction: column;
@@ -184,6 +192,8 @@
   font-style: italic;
 }
 
+/* Empty state */
+
 .empty {
   font-size: 12px;
   color: var(--text-sub);
@@ -191,22 +201,90 @@
   text-align: center;
 }
 
-.addButton {
-  position: fixed;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
+/* Open Library results */
+
+.searchStatus {
   font-size: 10px;
+  color: var(--text-faint);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.olResults {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.olResult {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.olResult:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.olCover {
+  width: 36px;
+  height: 54px;
+  object-fit: cover;
+  filter: grayscale(20%);
+  flex-shrink: 0;
+}
+
+.olNoCover {
+  width: 36px;
+  height: 54px;
+  background: var(--card-bg);
+  flex-shrink: 0;
+}
+
+.olInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.olTitle {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.olAuthor {
+  font-size: 10px;
+  color: var(--text-sub);
+}
+
+.olAdd {
+  font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--text-sub);
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--border-color);
-  transition: color 0.3s, border-color 0.3s;
-  background: var(--bg-color);
+  flex-shrink: 0;
+  transition: color 0.3s;
 }
 
-.addButton:hover {
+.olResult:hover .olAdd {
   color: var(--text-main);
-  border-color: var(--text-main);
+}
+
+.manualAdd {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-sub);
+  padding: 12px 0;
+  transition: color 0.3s;
+  text-align: left;
+}
+
+.manualAdd:hover {
+  color: var(--text-main);
 }

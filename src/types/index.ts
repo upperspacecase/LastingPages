@@ -27,4 +27,4 @@ export interface Concept {
   retentionDays: number;
 }
 
-export type AppView = 'library' | 'book-detail' | 'capture';
+export type AppView = 'library' | 'book-detail';

@@ -3,7 +3,6 @@
 import { useStore } from '@/store/useStore';
 import { Library } from '@/components/library/Library';
 import { BookDetail } from '@/components/book/BookDetail';
-import { Capture } from '@/components/capture/Capture';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
@@ -22,15 +21,6 @@ export default function Home() {
 
   if (!mounted) return null;
 
-  const view = (currentView === 'book-detail' || currentView === 'capture')
-    ? currentView
-    : 'library';
-
-  return (
-    <>
-      {view === 'library' && <Library />}
-      {view === 'book-detail' && <BookDetail />}
-      {view === 'capture' && <Capture />}
-    </>
-  );
+  if (currentView === 'book-detail') return <BookDetail />;
+  return <Library />;
 }
