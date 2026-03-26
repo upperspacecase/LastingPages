@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+'use client';
+
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useStore } from '@/store/useStore';
 import { searchBooks, type BookSearchResult } from '@/utils/openLibrary';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -13,20 +15,134 @@ export function Library() {
   const debouncedQuery = useDebounce(searchQuery, 400);
   const totalHighlights = books.reduce((sum, b) => sum + b.concepts.length, 0);
 
-  const filteredBooks = useMemo(() => {
-    if (!searchQuery.trim()) return books;
-    const q = searchQuery.toLowerCase();
-    return books.filter(book =>
-      book.title.toLowerCase().includes(q) ||
-      book.author.toLowerCase().includes(q) ||
-      book.concepts.some(c =>
-        c.text.toLowerCase().includes(q) ||
-        c.personalNote.toLowerCase().includes(q) ||
-        c.context.toLowerCase().includes(q)
-      )
-    );
-  }, [books, searchQuery]);
+  // Carousel state
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollState = useRef({
+    current: 0,
+    target: 0,
+    velocity: 0,
+    isDragging: false,
+    lastX: 0,
+    dragDistance: 0,
+  });
+  const rafRef = useRef<number>(0);
+  const searchActiveRef = useRef(false);
 
+  useEffect(() => {
+    searchActiveRef.current = !!searchQuery.trim();
+  }, [searchQuery]);
+
+  // Animation loop
+  useEffect(() => {
+    if (books.length === 0) return;
+
+    const CARD_WIDTH = 220;
+    const AUTO_SPEED = 0.3;
+    const state = scrollState.current;
+
+    function animate() {
+      if (!state.isDragging) {
+        state.target += state.velocity;
+        state.velocity *= 0.95;
+        if (!searchActiveRef.current) {
+          state.target += AUTO_SPEED;
+        }
+      }
+
+      state.current += (state.target - state.current) * 0.1;
+
+      const count = cardRefs.current.filter(Boolean).length;
+      if (count === 0) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      const totalSetWidth = count * CARD_WIDTH;
+
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+
+        let vPos = index * CARD_WIDTH - state.current;
+        while (vPos < -totalSetWidth / 2) vPos += totalSetWidth;
+        while (vPos > totalSetWidth / 2) vPos -= totalSetWidth;
+
+        if (Math.abs(vPos) < window.innerWidth) {
+          card.style.display = 'block';
+          const progress = vPos / (window.innerWidth / 1.5);
+          const z = -Math.pow(Math.abs(progress), 2) * 500;
+          const rotateY = progress * 45;
+          card.style.transform = `translateX(${vPos}px) translateZ(${z}px) rotateY(${rotateY}deg)`;
+          card.style.opacity = String(Math.max(0, 1 - Math.pow(Math.abs(progress), 3)));
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      rafRef.current = requestAnimationFrame(animate);
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [books.length]);
+
+  // Drag handlers
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const state = scrollState.current;
+
+    const onDown = (x: number) => {
+      state.isDragging = true;
+      state.lastX = x;
+      state.dragDistance = 0;
+      state.velocity = 0;
+      vp.style.cursor = 'grabbing';
+    };
+    const onUp = () => {
+      state.isDragging = false;
+      vp.style.cursor = 'grab';
+    };
+    const onMove = (x: number) => {
+      if (!state.isDragging) return;
+      const delta = x - state.lastX;
+      state.lastX = x;
+      state.dragDistance += Math.abs(delta);
+      state.target -= delta * 1.5;
+      state.velocity = -delta * 0.5;
+    };
+
+    const md = (e: MouseEvent) => onDown(e.clientX);
+    const mu = () => onUp();
+    const mm = (e: MouseEvent) => onMove(e.clientX);
+    const ts = (e: TouchEvent) => onDown(e.touches[0].clientX);
+    const te = () => onUp();
+    const tm = (e: TouchEvent) => onMove(e.touches[0].clientX);
+
+    vp.addEventListener('mousedown', md);
+    window.addEventListener('mouseup', mu);
+    window.addEventListener('mousemove', mm);
+    vp.addEventListener('touchstart', ts);
+    window.addEventListener('touchend', te);
+    window.addEventListener('touchmove', tm);
+
+    return () => {
+      vp.removeEventListener('mousedown', md);
+      window.removeEventListener('mouseup', mu);
+      window.removeEventListener('mousemove', mm);
+      vp.removeEventListener('touchstart', ts);
+      window.removeEventListener('touchend', te);
+      window.removeEventListener('touchmove', tm);
+    };
+  }, []);
+
+  const handleCardClick = useCallback((bookId: string) => {
+    if (scrollState.current.dragDistance > 5) return;
+    selectBook(bookId);
+  }, [selectBook]);
+
+  // Search: highlights
   const matchingHighlights = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase();
@@ -45,6 +161,7 @@ export function Library() {
     return matches;
   }, [books, searchQuery]);
 
+  // Open Library
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
       setOlResults([]);
@@ -53,12 +170,8 @@ export function Library() {
     let cancelled = false;
     setSearching(true);
     searchBooks(debouncedQuery, 4)
-      .then(results => {
-        if (!cancelled) { setOlResults(results); setSearching(false); }
-      })
-      .catch(() => {
-        if (!cancelled) setSearching(false);
-      });
+      .then(r => { if (!cancelled) { setOlResults(r); setSearching(false); } })
+      .catch(() => { if (!cancelled) setSearching(false); });
     return () => { cancelled = true; };
   }, [debouncedQuery]);
 
@@ -106,8 +219,10 @@ export function Library() {
     !books.some(b => b.title.toLowerCase() === r.title.toLowerCase())
   );
 
+  const hasResults = searchQuery.trim() && (matchingHighlights.length > 0 || newOlResults.length > 0 || searching);
+
   return (
-    <div className={styles.container}>
+    <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.brand}>LASTING PAGES</div>
         <div className={styles.meta}>
@@ -116,96 +231,86 @@ export function Library() {
         </div>
       </header>
 
-      <div className={styles.searchWrap}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="search or add a book..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button className={styles.searchClear} onClick={() => { setSearchQuery(''); setOlResults([]); }}>
-            &times;
-          </button>
-        )}
-      </div>
-
-      {searchQuery.trim() && matchingHighlights.length > 0 && (
-        <section className={styles.section}>
-          <div className={styles.sectionLabel}>
-            {matchingHighlights.length} MATCHING {matchingHighlights.length === 1 ? 'HIGHLIGHT' : 'HIGHLIGHTS'}
-          </div>
-          <div className={styles.highlightResults}>
-            {matchingHighlights.map(({ concept, book }) => (
-              <button key={concept.id} className={styles.highlightResult} onClick={() => selectBook(book.id)}>
-                <span className={styles.highlightSource}>{book.title}</span>
-                <span className={styles.highlightText}>{concept.text}</span>
-                {concept.personalNote && <span className={styles.highlightNote}>{concept.personalNote}</span>}
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className={styles.section}>
-        {filteredBooks.length > 0 ? (
-          <div className={styles.grid}>
-            {filteredBooks.map(book => (
-              <button key={book.id} className={styles.card} onClick={() => selectBook(book.id)}>
+      {books.length > 0 ? (
+        <div className={styles.viewport} ref={viewportRef}>
+          <div className={styles.strip}>
+            {books.map((book, i) => (
+              <div
+                key={book.id}
+                ref={el => { cardRefs.current[i] = el; }}
+                className={styles.card}
+                onClick={() => handleCardClick(book.id)}
+              >
                 {book.coverImage ? (
-                  <img src={book.coverImage} alt="" className={styles.cardImage} />
+                  <img src={book.coverImage} alt="" className={styles.cardImg} />
                 ) : (
-                  <div className={styles.cardPlaceholder}>
-                    <span className={styles.cardPlaceholderText}>{book.title}</span>
+                  <div className={styles.cardFallback}>
+                    <span className={styles.cardFallbackText}>{book.title}</span>
                   </div>
                 )}
-                <div className={styles.cardInfo}>
-                  <span className={styles.cardTitle}>{book.title}</span>
-                  <span className={styles.cardAuthor}>{book.author}</span>
-                  <span className={styles.cardCount}>
-                    {book.concepts.length} {book.concepts.length === 1 ? 'highlight' : 'highlights'}
-                  </span>
-                </div>
-              </button>
+              </div>
             ))}
           </div>
-        ) : !searchQuery.trim() ? (
-          <div className={styles.empty}>
-            search for a book above to add it to your library.
-          </div>
-        ) : null}
-      </section>
+        </div>
+      ) : (
+        <div className={styles.emptyCenter}>
+          <p className={styles.emptyText}>your library is empty.</p>
+        </div>
+      )}
 
-      {searchQuery.trim() && debouncedQuery.length >= 2 && (
-        <section className={styles.section}>
-          <div className={styles.sectionLabel}>ADD TO LIBRARY</div>
-          {searching && <p className={styles.searchStatus}>searching...</p>}
-          {newOlResults.length > 0 && (
-            <div className={styles.olResults}>
-              {newOlResults.map(r => (
-                <button key={r.olKey} className={styles.olResult} onClick={() => handleAddFromOL(r)}>
-                  {r.coverUrl ? (
-                    <img src={r.coverUrl} alt="" className={styles.olCover} />
-                  ) : (
-                    <div className={styles.olNoCover} />
-                  )}
-                  <div className={styles.olInfo}>
-                    <span className={styles.olTitle}>{r.title}</span>
-                    <span className={styles.olAuthor}>{r.author}{r.year ? ` (${r.year})` : ''}</span>
-                  </div>
-                  <span className={styles.olAdd}>+ ADD</span>
+      {hasResults && (
+        <div className={styles.resultsPanel}>
+          {matchingHighlights.length > 0 && (
+            <div className={styles.resultsSection}>
+              <div className={styles.resultsLabel}>
+                {matchingHighlights.length} MATCHING {matchingHighlights.length === 1 ? 'HIGHLIGHT' : 'HIGHLIGHTS'}
+              </div>
+              {matchingHighlights.slice(0, 5).map(({ concept, book }) => (
+                <button key={concept.id} className={styles.resultRow} onClick={() => selectBook(book.id)}>
+                  <span className={styles.resultSource}>{book.title}</span>
+                  <span className={styles.resultText}>{concept.text}</span>
                 </button>
               ))}
             </div>
           )}
-          {!searching && (
+          {(newOlResults.length > 0 || searching) && (
+            <div className={styles.resultsSection}>
+              <div className={styles.resultsLabel}>ADD TO LIBRARY</div>
+              {searching && <p className={styles.searchingText}>searching...</p>}
+              {newOlResults.map(r => (
+                <button key={r.olKey} className={styles.resultRow} onClick={() => handleAddFromOL(r)}>
+                  <span className={styles.resultText}>{r.title}</span>
+                  <span className={styles.resultSub}>{r.author}{r.year ? ` (${r.year})` : ''}</span>
+                  <span className={styles.resultAdd}>+ ADD</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {searchQuery.trim() && !searching && (
             <button className={styles.manualAdd} onClick={handleAddManual}>
               + ADD &ldquo;{searchQuery.trim()}&rdquo; MANUALLY
             </button>
           )}
-        </section>
+        </div>
       )}
+
+      <div className={styles.bottomInput}>
+        <span className={styles.inputLabel}>SEARCH OR ADD</span>
+        <div className={styles.inputGroup}>
+          <input
+            type="text"
+            placeholder="search or add a book..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.input}
+          />
+          {searchQuery && (
+            <button className={styles.clearBtn} onClick={() => { setSearchQuery(''); setOlResults([]); }}>
+              &times;
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
