@@ -219,7 +219,7 @@ export function Library() {
     !books.some(b => b.title.toLowerCase() === r.title.toLowerCase())
   );
 
-  const hasResults = searchQuery.trim() && (matchingHighlights.length > 0 || newOlResults.length > 0 || searching);
+  const showPanel = searchQuery.trim().length >= 2;
 
   return (
     <div className={styles.page}>
@@ -258,7 +258,7 @@ export function Library() {
         </div>
       )}
 
-      {hasResults && (
+      {showPanel && (
         <div className={styles.resultsPanel}>
           {matchingHighlights.length > 0 && (
             <div className={styles.resultsSection}>
@@ -273,10 +273,12 @@ export function Library() {
               ))}
             </div>
           )}
-          {(newOlResults.length > 0 || searching) && (
+          {searching && (
+            <p className={styles.searchingText}>searching...</p>
+          )}
+          {newOlResults.length > 0 && (
             <div className={styles.resultsSection}>
               <div className={styles.resultsLabel}>ADD TO LIBRARY</div>
-              {searching && <p className={styles.searchingText}>searching...</p>}
               {newOlResults.map(r => (
                 <button key={r.olKey} className={styles.resultRow} onClick={() => handleAddFromOL(r)}>
                   <span className={styles.resultText}>{r.title}</span>
@@ -286,7 +288,7 @@ export function Library() {
               ))}
             </div>
           )}
-          {searchQuery.trim() && !searching && (
+          {!searching && (
             <button className={styles.manualAdd} onClick={handleAddManual}>
               + ADD &ldquo;{searchQuery.trim()}&rdquo; MANUALLY
             </button>
